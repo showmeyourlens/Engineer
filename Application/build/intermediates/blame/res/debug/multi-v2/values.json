@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Cross\\AndroidStudioProjects\\android-BluetoothLeGatt-master\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "C:\\Users\\Cross\\AndroidStudioProjects\\Engineer\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Cross\\.gradle\\caches\\transforms-1\\files-1.1\\support-media-compat-27.0.2.aar\\e40cc67e16b8bd54705d17af66f160fa\\res\\values\\values.xml",
@@ -40,26 +40,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Cross\\AndroidStudioProjects\\android-BluetoothLeGatt-master\\Application\\src\\main\\res\\values\\base-strings.xml",
-                    "from": {
-                        "startLines": "18,19",
-                        "startColumns": "4,4",
-                        "startOffsets": "647,700",
-                        "endLines": "18,28",
-                        "endColumns": "52,13",
-                        "endOffsets": "695,971"
-                    },
-                    "to": {
-                        "startLines": "444,449",
-                        "startColumns": "4,4",
-                        "startOffsets": "40463,40768",
-                        "endLines": "444,458",
-                        "endColumns": "52,13",
-                        "endOffsets": "40511,41039"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Cross\\AndroidStudioProjects\\android-BluetoothLeGatt-master\\Application\\src\\main\\res\\values\\template-styles.xml",
+                    "source": "C:\\Users\\Cross\\AndroidStudioProjects\\Engineer\\Application\\src\\main\\res\\values\\template-styles.xml",
                     "from": {
                         "startLines": "24,20,22,27,29,34",
                         "startColumns": "4,4,4,4,4,4",
@@ -75,6 +56,25 @@
                         "endLines": "478,1785,1786,1794,1894,1900",
                         "endColumns": "50,59,52,26,12,12",
                         "endOffsets": "42297,128848,128901,129600,137505,137783"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Cross\\AndroidStudioProjects\\Engineer\\Application\\src\\main\\res\\values\\base-strings.xml",
+                    "from": {
+                        "startLines": "18,19",
+                        "startColumns": "4,4",
+                        "startOffsets": "647,700",
+                        "endLines": "18,28",
+                        "endColumns": "52,13",
+                        "endOffsets": "695,971"
+                    },
+                    "to": {
+                        "startLines": "444,449",
+                        "startColumns": "4,4",
+                        "startOffsets": "40463,40768",
+                        "endLines": "444,458",
+                        "endColumns": "52,13",
+                        "endOffsets": "40511,41039"
                     }
                 },
                 {
@@ -97,20 +97,20 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Cross\\AndroidStudioProjects\\android-BluetoothLeGatt-master\\Application\\src\\main\\res\\values\\strings.xml",
+                    "source": "C:\\Users\\Cross\\AndroidStudioProjects\\Engineer\\Application\\src\\main\\res\\values\\template-dimens.xml",
                     "from": {
-                        "startLines": "16,21,22,24,17,18,19,31,32,33,34,20,23,27,26,28",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "686,954,1002,1114,753,798,863,1415,1464,1519,1562,910,1056,1256,1198,1330",
-                        "endColumns": "66,47,53,82,44,64,46,48,54,42,42,43,57,73,57,59",
-                        "endOffsets": "748,997,1051,1192,793,858,905,1459,1514,1557,1600,949,1109,1325,1251,1385"
+                        "startLines": "28,24,23,22,21,20,29",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "959,880,836,791,748,706,1029",
+                        "endColumns": "69,42,43,44,42,41,67",
+                        "endOffsets": "1024,918,875,831,786,743,1092"
                     },
                     "to": {
-                        "startLines": "445,446,447,448,459,460,461,462,463,464,465,466,469,470,471,472",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "40516,40583,40631,40685,41044,41089,41154,41201,41250,41305,41348,41391,41559,41617,41691,41749",
-                        "endColumns": "66,47,53,82,44,64,46,48,54,42,42,43,57,73,57,59",
-                        "endOffsets": "40578,40626,40680,40763,41084,41149,41196,41245,41300,41343,41386,41430,41612,41686,41744,41804"
+                        "startLines": "363,364,365,366,367,368,392",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "35460,35530,35573,35617,35662,35705,37178",
+                        "endColumns": "69,42,43,44,42,41,67",
+                        "endOffsets": "35525,35568,35612,35657,35700,35742,37241"
                     }
                 },
                 {
@@ -133,20 +133,20 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Cross\\AndroidStudioProjects\\android-BluetoothLeGatt-master\\Application\\src\\main\\res\\values\\template-dimens.xml",
+                    "source": "C:\\Users\\Cross\\AndroidStudioProjects\\Engineer\\Application\\src\\main\\res\\values\\strings.xml",
                     "from": {
-                        "startLines": "28,24,23,22,21,20,29",
-                        "startColumns": "4,4,4,4,4,4,4",
-                        "startOffsets": "959,880,836,791,748,706,1029",
-                        "endColumns": "69,42,43,44,42,41,67",
-                        "endOffsets": "1024,918,875,831,786,743,1092"
+                        "startLines": "16,21,22,24,17,18,19,31,32,33,34,20,23,27,26,28",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "686,954,1002,1114,753,798,863,1415,1464,1519,1562,910,1056,1256,1198,1330",
+                        "endColumns": "66,47,53,82,44,64,46,48,54,42,42,43,57,73,57,59",
+                        "endOffsets": "748,997,1051,1192,793,858,905,1459,1514,1557,1600,949,1109,1325,1251,1385"
                     },
                     "to": {
-                        "startLines": "363,364,365,366,367,368,392",
-                        "startColumns": "4,4,4,4,4,4,4",
-                        "startOffsets": "35460,35530,35573,35617,35662,35705,37178",
-                        "endColumns": "69,42,43,44,42,41,67",
-                        "endOffsets": "35525,35568,35612,35657,35700,35742,37241"
+                        "startLines": "445,446,447,448,459,460,461,462,463,464,465,466,469,470,471,472",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "40516,40583,40631,40685,41044,41089,41154,41201,41250,41305,41348,41391,41559,41617,41691,41749",
+                        "endColumns": "66,47,53,82,44,64,46,48,54,42,42,43,57,73,57,59",
+                        "endOffsets": "40578,40626,40680,40763,41084,41149,41196,41245,41300,41343,41386,41430,41612,41686,41744,41804"
                     }
                 }
             ]

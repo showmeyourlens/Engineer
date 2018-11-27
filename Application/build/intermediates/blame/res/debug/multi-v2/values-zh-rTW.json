@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Cross\\AndroidStudioProjects\\android-BluetoothLeGatt-master\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-zh-rTW\\values-zh-rTW.xml",
+            "outputFile": "C:\\Users\\Cross\\AndroidStudioProjects\\Engineer\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-zh-rTW\\values-zh-rTW.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Cross\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-27.0.2.aar\\1fc0cab590bb6520370729f87c208049\\res\\values-zh-rTW\\values-zh-rTW.xml",
