@@ -48,5 +48,6 @@
 
         </activity>
         <service android:name=".BluetoothLeService" android:enabled="true"/>
+        <service android:name=".AccelerometerService" android:enabled="true"/>
     </application>
 </manifest>
