@@ -33,10 +33,12 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
+import java.util.Vector;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
@@ -51,6 +53,8 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static String ACTION_RSSI_AVAILABLE =
+            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
     public final static String EXTRA_RSSI =
@@ -63,7 +67,8 @@ public class BluetoothLeService extends Service {
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
     private static final int STATE_CONNECTED = 2;
-    private static final int RSSI_PERIOD = 1000;
+    private static final int RSSI_PERIOD = 200;
+    private static final int RSSI_AVERAGE_SEED = 5;
     private final IBinder mBinder = new LocalBinder();
     public String RSSI_text;
     BluetoothGattCharacteristic bluetoothGattCharacteristicHM_10 = new BluetoothGattCharacteristic(UUID_HEART_RATE_MEASUREMENT, BluetoothGattCharacteristic.PROPERTY_READ, 0);
@@ -74,6 +79,10 @@ public class BluetoothLeService extends Service {
     private int mConnectionState = STATE_DISCONNECTED;
     private Timer rssiTimer;
     private TimerTask task;
+    private int rssiValuesCounter = 0;
+    private int averageRSSI = 0;
+    private LinkedList<Integer> RSSI_List = new LinkedList<>();
+    private StringBuilder testSB;
     // Implements callback methods for GATT events that the app cares about.  For example,
     // connection change and services discovered.
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
@@ -83,14 +92,17 @@ public class BluetoothLeService extends Service {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 intentAction = ACTION_GATT_CONNECTED;
                 mConnectionState = STATE_CONNECTED;
-                task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        mBluetoothGatt.readRemoteRssi();
-                    }
-                };
-                rssiTimer = new Timer();
-                rssiTimer.schedule(task, 1000, RSSI_PERIOD);
+                if (task == null) {
+                    task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (mBluetoothGatt != null)
+                            mBluetoothGatt.readRemoteRssi();
+                        }
+                    };
+                    rssiTimer = new Timer();
+                    rssiTimer.schedule(task, 1000, RSSI_PERIOD);
+                }
                 broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
@@ -109,11 +121,21 @@ public class BluetoothLeService extends Service {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                final Intent intent = new Intent(ACTION_DATA_AVAILABLE);
-                RSSI_text = String.valueOf(rssi);
-                intent.putExtra(EXTRA_RSSI, RSSI_text);
-                intent.putExtra(isRSSI, true);
-                sendBroadcast(intent);
+                if (RSSI_List.size() < RSSI_AVERAGE_SEED-1)
+                    RSSI_List.add(rssi);
+                else{
+                    testSB = new StringBuilder();
+                    RSSI_List.add(rssi);
+                    RSSI_List.removeFirst();
+                    for (Integer value : RSSI_List){
+                        averageRSSI += value;
+                    }
+                    averageRSSI = averageRSSI/RSSI_AVERAGE_SEED;
+                    final Intent intent = new Intent(ACTION_RSSI_AVAILABLE);
+                    //RSSI_text = String.valueOf(averageRSSI);
+                    intent.putExtra(EXTRA_RSSI, averageRSSI);
+                    sendBroadcast(intent);
+                }
             }
         }
 
@@ -151,25 +173,21 @@ public class BluetoothLeService extends Service {
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
         final byte[] data = characteristic.getValue();
-        if (data != null) {
-            if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action) && data.length == 1) {
-                characteristic.setValue("R");
-                writeCharacteristic(characteristic);
-            }
-            else if (data.length >0){
-                Log.v("AndroidLE", "broadcastUpdate()");
-                Log.v("AndroidLE", "data.length: " + data.length);
-                final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for (byte byteChar : data) {
-                    stringBuilder.append(String.format("%02X ", byteChar));
 
-                    Log.v("AndroidLE", String.format("%02X ", byteChar));
-                }
-                intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
-                sendBroadcast(intent);
-            }
+        if (data.length > 0) {
+            Log.v("AndroidLE", "broadcastUpdate()");
+            Log.v("AndroidLE", "data.length: " + data.length);
+            /*final StringBuilder stringBuilder = new StringBuilder(data.length);
+            for (byte byteChar : data) {
+                stringBuilder.append(String.format("%02X ", byteChar));
 
+                Log.v("AndroidLE", String.format("%02X ", byteChar));
+            }*/
+            intent.putExtra(EXTRA_DATA, new String(data) + "\n"/* + stringBuilder.toString()*/);
+            sendBroadcast(intent);
         }
+
+
     }
 
     @Override
@@ -179,21 +197,11 @@ public class BluetoothLeService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        // After using a given device, you should make sure that BluetoothGatt.close() is called
-        // such that resources are cleaned up properly.  In this particular example, close() is
-        // invoked when the UI is disconnected from the Service.
         close();
         return super.onUnbind(intent);
     }
 
-    /**
-     * Initializes a reference to the local Bluetooth adapter.
-     *
-     * @return Return true if the initialization is successful.
-     */
     public boolean initialize() {
-        // For API level 18 and above, get a reference to BluetoothAdapter through
-        // BluetoothManager.
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
             if (mBluetoothManager == null) {
@@ -212,22 +220,12 @@ public class BluetoothLeService extends Service {
         return true;
     }
 
-    /**
-     * Connects to the GATT server hosted on the Bluetooth LE device.
-     *
-     * @param address The device address of the destination device.
-     * @return Return true if the connection is initiated successfully. The connection result
-     * is reported asynchronously through the
-     * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     * callback.
-     */
     public boolean connect(final String address) {
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
             return false;
         }
 
-        // Previously connected device.  Try to reconnect.
         if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
                 && mBluetoothGatt != null) {
             Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
@@ -244,8 +242,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "Device not found.  Unable to connect.");
             return false;
         }
-        // We want to directly connect to the device, so we are setting the autoConnect
-        // parameter to false.
+
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
@@ -253,27 +250,20 @@ public class BluetoothLeService extends Service {
         return true;
     }
 
-    /**
-     * Disconnects an existing connection or cancel a pending connection. The disconnection result
-     * is reported asynchronously through the
-     * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     * callback.
-     */
     public void disconnect() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
-
-        task.cancel();
-        rssiTimer.cancel();
+        if (task != null) {
+            task.cancel();
+            rssiTimer.cancel();
+            task = null;
+            rssiTimer = null;
+        }
         mBluetoothGatt.disconnect();
     }
 
-    /**
-     * After using a given BLE device, the app must call this method to ensure resources are
-     * released properly.
-     */
     public void close() {
         if (mBluetoothGatt == null) {
             return;
@@ -282,13 +272,6 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt = null;
     }
 
-    /**
-     * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
-     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
-     * callback.
-     *
-     * @param characteristic The characteristic to read from.
-     */
     public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
@@ -297,12 +280,6 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
-    /**
-     * Enables or disables notification on a give characteristic.
-     *
-     * @param characteristic Characteristic to act on.
-     * @param enabled        If true, enable notification.  False otherwise.
-     */
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
                                               boolean enabled) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
