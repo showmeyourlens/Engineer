@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Cross\\AndroidStudioProjects\\Engineer\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-nb\\values-nb.xml",
+            "outputFile": "C:\\Users\\Cross\\StudioProjects\\Engineer\\Application\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-nb\\values-nb.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Cross\\.gradle\\caches\\transforms-1\\files-1.1\\support-compat-27.0.2.aar\\0cc3cefaab7daad27b91e4f2ea5b1585\\res\\values-nb\\values-nb.xml",

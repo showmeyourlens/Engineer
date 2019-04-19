@@ -42,13 +42,14 @@
 
     <application
         android:debuggable="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@drawable/sentinel_logo_tiny"
+        android:label="Sentinel"
         android:testOnly="true"
         android:theme="@android:style/Theme.Holo.Light" >
         <activity
             android:name="com.example.android.bluetoothlegatt.DeviceControlActivity"
-            android:label="@string/app_name" >
+            android:label="Sentinel"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -60,6 +61,9 @@
 
         <service
             android:name="com.example.android.bluetoothlegatt.BluetoothLeService"
+            android:enabled="true" />
+        <service
+            android:name="com.example.android.bluetoothlegatt.AccelerometerService"
             android:enabled="true" />
 
         <provider

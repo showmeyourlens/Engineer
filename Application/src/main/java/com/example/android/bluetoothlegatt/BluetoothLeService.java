@@ -54,15 +54,14 @@ public class BluetoothLeService extends Service {
     public final static String ACTION_DATA_AVAILABLE =
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
     public final static String ACTION_RSSI_AVAILABLE =
-            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+            "com.example.bluetooth.le.ACTION_RSSI_AVAILABLE";
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
     public final static String EXTRA_RSSI =
             "com.example.bluetooth.le.EXTRA_RSSI";
     public final static String isRSSI =
             "com.example.bluetooth.le.isRSSI";
-    public final static UUID UUID_HEART_RATE_MEASUREMENT =
-            UUID.fromString(SampleGattAttributes.HM_10);
+    public final static UUID HM10_UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb");
     private final static String TAG = BluetoothLeService.class.getSimpleName();
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -71,7 +70,7 @@ public class BluetoothLeService extends Service {
     private static final int RSSI_AVERAGE_SEED = 5;
     private final IBinder mBinder = new LocalBinder();
     public String RSSI_text;
-    BluetoothGattCharacteristic bluetoothGattCharacteristicHM_10 = new BluetoothGattCharacteristic(UUID_HEART_RATE_MEASUREMENT, BluetoothGattCharacteristic.PROPERTY_READ, 0);
+    BluetoothGattCharacteristic bluetoothGattCharacteristicHM_10 = new BluetoothGattCharacteristic(HM10_UUID, BluetoothGattCharacteristic.PROPERTY_READ, 0);
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
@@ -83,26 +82,18 @@ public class BluetoothLeService extends Service {
     private int averageRSSI = 0;
     private LinkedList<Integer> RSSI_List = new LinkedList<>();
     private StringBuilder testSB;
-    // Implements callback methods for GATT events that the app cares about.  For example,
-    // connection change and services discovered.
+
+
+    // Implementuje metody odwołujące się do zdarzeń GATT, które będą potrzebne aplikacji
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
+
         @Override
+        // Reakcja na zmianę stanu połączenia
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             String intentAction;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 intentAction = ACTION_GATT_CONNECTED;
                 mConnectionState = STATE_CONNECTED;
-                if (task == null) {
-                    task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (mBluetoothGatt != null)
-                            mBluetoothGatt.readRemoteRssi();
-                        }
-                    };
-                    rssiTimer = new Timer();
-                    rssiTimer.schedule(task, 1000, RSSI_PERIOD);
-                }
                 broadcastUpdate(intentAction);
                 Log.i(TAG, "Connected to GATT server.");
                 // Attempts to discover services after successful connection.
@@ -119,22 +110,25 @@ public class BluetoothLeService extends Service {
         }
 
         @Override
+        // Reakcja na pojawienie się RSSI do odczytania
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                if (RSSI_List.size() < RSSI_AVERAGE_SEED-1)
+                if (RSSI_List.size() < RSSI_AVERAGE_SEED - 1)
                     RSSI_List.add(rssi);
-                else{
-                    testSB = new StringBuilder();
+                else {
                     RSSI_List.add(rssi);
                     RSSI_List.removeFirst();
-                    for (Integer value : RSSI_List){
+                    for (Integer value : RSSI_List) {
                         averageRSSI += value;
+                        Log.d("RSSI:", String.valueOf(value));
                     }
-                    averageRSSI = averageRSSI/RSSI_AVERAGE_SEED;
+                    averageRSSI = averageRSSI / RSSI_List.size();
+                    Log.d("RSSI AVERAGE", String.valueOf(averageRSSI)
+                            + String.valueOf(RSSI_List.size()));
                     final Intent intent = new Intent(ACTION_RSSI_AVAILABLE);
-                    //RSSI_text = String.valueOf(averageRSSI);
                     intent.putExtra(EXTRA_RSSI, averageRSSI);
                     sendBroadcast(intent);
+                    averageRSSI =0;
                 }
             }
         }
@@ -177,16 +171,9 @@ public class BluetoothLeService extends Service {
         if (data.length > 0) {
             Log.v("AndroidLE", "broadcastUpdate()");
             Log.v("AndroidLE", "data.length: " + data.length);
-            /*final StringBuilder stringBuilder = new StringBuilder(data.length);
-            for (byte byteChar : data) {
-                stringBuilder.append(String.format("%02X ", byteChar));
-
-                Log.v("AndroidLE", String.format("%02X ", byteChar));
-            }*/
-            intent.putExtra(EXTRA_DATA, new String(data) + "\n"/* + stringBuilder.toString()*/);
+            intent.putExtra(EXTRA_DATA, new String(data) + "\n");
             sendBroadcast(intent);
         }
-
 
     }
 
@@ -201,6 +188,7 @@ public class BluetoothLeService extends Service {
         return super.onUnbind(intent);
     }
 
+    // inicjalizuje Managera i Adapter Bluetooth
     public boolean initialize() {
         if (mBluetoothManager == null) {
             mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
@@ -220,6 +208,7 @@ public class BluetoothLeService extends Service {
         return true;
     }
 
+    // funkcja która próbuje się połączyć z modułem HM-10
     public boolean connect(final String address) {
         if (mBluetoothAdapter == null || address == null) {
             Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
@@ -250,19 +239,14 @@ public class BluetoothLeService extends Service {
         return true;
     }
 
-    public void disconnect() {
-        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
-            Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
-        }
-        if (task != null) {
-            task.cancel();
-            rssiTimer.cancel();
-            task = null;
-            rssiTimer = null;
-        }
-        mBluetoothGatt.disconnect();
-    }
+//    public void disconnect() {
+//        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+//            Log.w(TAG, "BluetoothAdapter not initialized");
+//            return;
+//        }
+//        rssiMeasureManager(false);
+//        mBluetoothGatt.disconnect();
+//    }
 
     public void close() {
         if (mBluetoothGatt == null) {
@@ -277,6 +261,7 @@ public class BluetoothLeService extends Service {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
         }
+        boolean i = rssiMeasureManager(true);
         mBluetoothGatt.readCharacteristic(characteristic);
     }
 
@@ -289,7 +274,7 @@ public class BluetoothLeService extends Service {
         mBluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         // This is specific to Heart Rate Measurement.
-        if (UUID_HEART_RATE_MEASUREMENT.equals(characteristic.getUuid())) {
+        if (HM10_UUID.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -318,4 +303,32 @@ public class BluetoothLeService extends Service {
             return BluetoothLeService.this;
         }
     }
+
+    public boolean rssiMeasureManager(boolean turn) {
+        if (turn) {
+            if (task == null) {
+                task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (mBluetoothGatt != null)
+                            mBluetoothGatt.readRemoteRssi();
+                    }
+                };
+                rssiTimer = new Timer();
+                rssiTimer.schedule(task, 1000, RSSI_PERIOD);
+                return true;
+            }
+        } else {
+            if (task != null) {
+                task.cancel();
+                rssiTimer.cancel();
+                task = null;
+                rssiTimer = null;
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

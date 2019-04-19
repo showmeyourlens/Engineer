@@ -20,7 +20,7 @@
     <string name="label_state">State:</string>
     <string name="no_data">No data</string>
     <string name="connected">Connected</string>
-    <string name="disconnected">Disconnected</string>
+    <string name="disconnected">Disconnected!</string>
     <string name="title_devices">BLE Device Scan</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
 
@@ -33,4 +33,14 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
+    <string name="change_password">Change password</string>
+    <string name="new_password">New password:</string>
+    <string name="cancel">Cancel</string>
+    <string name="password">Password</string>
+    <string name="distance">Distance</string>
+    <string name="car_opening_distance_in_meters">Car opening distance (in meters):</string>
+    <string name="type_distance">Type distance...</string>
+    <string name="mode">Safe mode</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 </resources>

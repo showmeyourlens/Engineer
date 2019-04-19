@@ -1,8 +1,8 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-52:12
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-52:12
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-52:12
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-56:12
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-56:12
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-56:12
 MERGED from [com.android.support:support-v13:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\support-v13-27.0.2.aar\57b3885d34fddfb8dbbf69ab96a0e658\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-v4:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\support-v4-27.0.2.aar\655806e983bbbe3f0ab3ec1a36e7eaa1\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:cardview-v7:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\cardview-v7-27.0.2.aar\2234890e7cdaba6ff45cb564e9c3da12\AndroidManifest.xml:17:1-22:12
@@ -15,76 +15,88 @@ MERGED from [com.android.support:support-core-ui:27.0.2] C:\Users\Cross\.gradle\
 MERGED from [com.android.support:support-vector-drawable:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-27.0.2.aar\e5c1a85e5c6e0094fe4a7bd8a0b9fa44\AndroidManifest.xml:17:1-22:12
 MERGED from [com.android.support:support-compat:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\support-compat-27.0.2.aar\0cc3cefaab7daad27b91e4f2ea5b1585\AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:runtime:1.0.3] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\runtime-1.0.3.aar\ca820644442aded9903208fa04a1970b\AndroidManifest.xml:17:1-24:12
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-52:12
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-52:12
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-56:12
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:1-56:12
 	package
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:21:5-50
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:22:5-50
 	android:versionName
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:23:5-30
-		INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:24:5-30
+		INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+	xmlns:tools
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:21:5-51
 	xmlns:android
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:11-69
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:20:11-69
 	android:versionCode
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:22:5-28
-		INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:23:5-29
+		INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
 uses-feature#android.hardware.bluetooth_le
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:31:5-89
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:32:5-89
 	android:required
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:31:64-87
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:32:64-87
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:31:19-63
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:32:19-63
 uses-permission#android.permission.BLUETOOTH
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:33:5-67
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:34:5-67
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:33:22-65
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:34:22-65
 uses-permission#android.permission.BLUETOOTH_ADMIN
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:34:5-73
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:35:5-73
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:34:22-71
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:35:22-71
 uses-permission#android.permission.ACCESS_COARSE_LOCATION
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:35:5-80
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:36:5-80
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:35:22-78
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:36:22-78
 application
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:37:5-51:19
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:38:5-55:19
 	android:label
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:37:18-50
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:38:18-42
+	tools:ignore
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:41:9-48
 	android:icon
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:38:9-45
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:39:9-52
 	android:theme
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:39:9-56
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:40:9-56
 activity#com.example.android.bluetoothlegatt.DeviceControlActivity
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:41:9-49:20
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:43:9-52:20
+	android:screenOrientation
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:45:13-49
 	android:label
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:42:13-45
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:44:13-37
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:41:19-56
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:43:19-56
 intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER+my.action.string
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:43:13-47:29
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:46:13-50:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:44:17-68
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:47:17-68
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:44:25-66
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:47:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:45:17-76
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:48:17-76
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:45:27-74
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:48:27-74
 action#my.action.string
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:46:17-59
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:49:17-59
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:46:25-56
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:49:25-56
 service#com.example.android.bluetoothlegatt.BluetoothLeService
-ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:50:9-77
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:53:9-77
 	android:enabled
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:50:53-75
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:53:53-75
 	android:name
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml:50:18-52
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:53:18-52
+service#com.example.android.bluetoothlegatt.AccelerometerService
+ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:54:9-79
+	android:enabled
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:54:55-77
+	android:name
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml:54:18-54
 uses-sdk
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
 MERGED from [com.android.support:support-v13:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\support-v13-27.0.2.aar\57b3885d34fddfb8dbbf69ab96a0e658\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-v13:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\support-v13-27.0.2.aar\57b3885d34fddfb8dbbf69ab96a0e658\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-v4:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\support-v4-27.0.2.aar\655806e983bbbe3f0ab3ec1a36e7eaa1\AndroidManifest.xml:20:5-44
@@ -109,13 +121,13 @@ MERGED from [com.android.support:support-compat:27.0.2] C:\Users\Cross\.gradle\c
 MERGED from [com.android.support:support-compat:27.0.2] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\support-compat-27.0.2.aar\0cc3cefaab7daad27b91e4f2ea5b1585\AndroidManifest.xml:20:5-44
 MERGED from [android.arch.lifecycle:runtime:1.0.3] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\runtime-1.0.3.aar\ca820644442aded9903208fa04a1970b\AndroidManifest.xml:20:5-22:41
 MERGED from [android.arch.lifecycle:runtime:1.0.3] C:\Users\Cross\.gradle\caches\transforms-1\files-1.1\runtime-1.0.3.aar\ca820644442aded9903208fa04a1970b\AndroidManifest.xml:20:5-22:41
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
-INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\Cross\AndroidStudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Cross\StudioProjects\Engineer\Application\src\main\AndroidManifest.xml

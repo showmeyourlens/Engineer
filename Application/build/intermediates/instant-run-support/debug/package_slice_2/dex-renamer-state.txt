@@ -1,4 +1,4 @@
-#Mon Nov 12 15:49:30 CET 2018
-base.0=C\:\\Users\\Cross\\AndroidStudioProjects\\android-BluetoothLeGatt-master\\Application\\build\\intermediates\\transforms\\dexMerger\\debug\\59
+#Sun Feb 03 21:45:44 CET 2019
+base.0=C\:\\Users\\Cross\\StudioProjects\\Engineer\\Application\\build\\intermediates\\transforms\\dexMerger\\debug\\117
 path.0=classes.dex
 renamed.0=classes.dex

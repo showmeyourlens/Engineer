@@ -14,10 +14,12 @@
      limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     android:orientation="vertical">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,7 +30,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_device_address"
+            android:text="Safe mode:"
             android:textSize="18sp" />
 
         <Space
@@ -36,22 +38,10 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:id="@+id/device_address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
-
-        <TextView
+            android:id="@+id/safe_mode_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_state"
+            android:text="Undefined"
             android:textSize="18sp" />
 
         <Space
@@ -62,10 +52,41 @@
             android:id="@+id/connection_state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="right"
             android:text="@string/disconnected"
             android:textSize="18sp" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/carImage"
+        android:layout_width="match_parent"
+        android:layout_height="149dp"
+        app:srcCompat="@drawable/car_closed" />
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="10dp"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/label_data"-->
+            <!--android:textSize="18sp" />-->
+
+        <!--<Space-->
+            <!--android:layout_width="5dp"-->
+            <!--android:layout_height="wrap_content" />-->
+
+        <!--<TextView-->
+            <!--android:id="@+id/data_value"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/no_data"-->
+            <!--android:textSize="18sp" />-->
+    <!--</LinearLayout>-->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -75,31 +96,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_data"
-            android:textSize="18sp" />
-
-        <Space
-            android:layout_width="5dp"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/data_value"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/no_data"
-            android:textSize="18sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="RSSI:"
+            android:text="Distance:"
             android:textSize="18sp" />
 
         <Space
@@ -115,10 +112,12 @@
     </LinearLayout>
 
 
+
     <Button
         android:id="@+id/hardOpenButton"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:onClick="hardOpen"
-        android:text="OPEN" />
+        android:text="FORCE OPEN" />
+
 </LinearLayout>

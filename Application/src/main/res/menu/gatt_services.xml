@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2013 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,17 +12,26 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_refresh"
-          android:checkable="false"
-          android:orderInCategory="1"
-          android:showAsAction="ifRoom"/>
-    <item android:id="@+id/menu_connect"
-          android:title="@string/menu_connect"
-          android:orderInCategory="100"
-          android:showAsAction="ifRoom|withText"/>
-    <item android:id="@+id/menu_disconnect"
-          android:title="@string/menu_disconnect"
-          android:orderInCategory="101"
-          android:showAsAction="ifRoom|withText"/>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/password_change"
+        android:orderInCategory="102"
+        android:title="Password change"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/distance_change"
+        android:title="@string/distance"
+        android:orderInCategory="103"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/safe_mode"
+        android:title="@string/mode"
+        android:orderInCategory="104"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/pair"
+        android:title="Pair"
+        android:orderInCategory="104"
+        app:showAsAction="withText" />
 </menu>

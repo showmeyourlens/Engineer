@@ -17,8 +17,12 @@
 package com.example.android.bluetoothlegatt;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -36,18 +40,23 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
+import android.util.LayoutDirection;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -67,30 +76,44 @@ public class DeviceControlActivity extends Activity {
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
-    private static final int TRESHOLD_RSSI = -65;
     private static final int CAR_OPENING_COUNTER = 5;
+    private static final String CHANNEL_ID = "ChannelID";
+    private static final CharSequence CHANNEL_NAME = "Channel_name";
 
+    private boolean isCarOpened = false;
+    private ImageView carImage;
     private Button hardOpenButton;
     private TextView mConnectionState;
     private TextView mDataField;
     private TextView mRSSI;
     private TextView mAccelerometer;
-    private String mDeviceName;
-    private String mDeviceAddress;
+    private TextView mSafeModeState;
+    private String mDeviceName = "HM-10";
+    public static String mDeviceAddress = "D4:36:39:DA:F8:12";
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeService mBluetoothLeService;
     private Service mAccelerometerService;
     private boolean mConnected = false;
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private BluetoothGattCharacteristic bluetoothGattCharacteristicHM_10;
-    private String password = "pass";
-    private double distance = 0.0;
+    private String HASH = "91b4d142823f7d20c5f08df69122de43f35f057a988d9619f6d3138485c9a203";
+    public static String password = "000000";
+    public static double distance_threshold = 4.0;
     private boolean areReceiversRegistered = false;
     private int rssiValue = 0;
     private boolean isMoving = false;
     private int counter = 0;
     private TimerTask connectionMonitor;
     private Timer timer;
+    boolean isSafeModeOn = false;
+    private Context context;
+    private LayoutInflater layoutInflater;
+    private SettingsChangeHandler settingsChangeHandler;
+    private boolean mAccServiceBound = false;
+    private boolean mBLEServiceBound = false;
+    private NotificationChannel mChannel;
+    private Verification verification;
+    private String newPassword = "";
 
 
     private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
@@ -98,6 +121,9 @@ public class DeviceControlActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
+        settingsChangeHandler = new SettingsChangeHandler();
+        layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         setContentView(R.layout.gatt_services_characteristics);
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
@@ -134,18 +160,20 @@ public class DeviceControlActivity extends Activity {
             }
         }
 
-        mDeviceName = "HM-10";
-        mDeviceAddress = "D4:36:39:DA:F8:12";
+
 
         // Sets up UI references.
-        ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
-        mDataField = (TextView) findViewById(R.id.data_value);
+        mSafeModeState = (TextView) findViewById(R.id.safe_mode_state);
         mRSSI = (TextView) findViewById(R.id.RSSI_value);
-        mAccelerometer = (TextView) findViewById(R.id.Accelerometer_value);
+       safeModeState(false);
         hardOpenButton = findViewById(R.id.hardOpenButton);
-        getActionBar().setTitle(mDeviceName);
+        //getActionBar().setTitle(mDeviceName);
         // getActionBar().setDisplayHomeAsUpEnabled(true);
+        carImage = findViewById(R.id.carImage);
+        carImage.setImageResource(R.drawable.car_closed);
+        verification = new Verification();
+
 
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mBLSServiceConnection, BIND_AUTO_CREATE);
@@ -157,7 +185,7 @@ public class DeviceControlActivity extends Activity {
             connectionMonitor = new TimerTask() {
                 @Override
                 public void run() {
-                    if (mConnected == false)
+                    if (!mConnected)
                         mBluetoothLeService.connect(mDeviceAddress);
                 }
             };
@@ -166,7 +194,6 @@ public class DeviceControlActivity extends Activity {
         }
     }
 
-    // Code to manage Service lifecycle.
     private final ServiceConnection mBLSServiceConnection = new ServiceConnection() {
 
         @Override
@@ -176,7 +203,7 @@ public class DeviceControlActivity extends Activity {
                 Log.e(TAG, "Unable to initialize Bluetooth");
                 finish();
             }
-            // Automatically connects to the device upon successful start-up initialization.
+            mBLEServiceBound = true;
             mBluetoothLeService.connect(mDeviceAddress);
 
         }
@@ -184,6 +211,7 @@ public class DeviceControlActivity extends Activity {
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mBluetoothLeService = null;
+            mBLEServiceBound = false;
         }
     };
 
@@ -193,11 +221,13 @@ public class DeviceControlActivity extends Activity {
         public void onServiceConnected(ComponentName componentName, IBinder service) {
             AccelerometerService.LocalBinder binder = (AccelerometerService.LocalBinder) service;
             mAccelerometerService = binder.getService();
+            mAccServiceBound = true;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             mAccelerometerService = null;
+            mAccServiceBound = false;
         }
     };
 
@@ -205,7 +235,7 @@ public class DeviceControlActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             isMoving = intent.getBooleanExtra(Intent.EXTRA_TEXT, false);
-            displayIsMoving(isMoving);
+           // displayIsMoving(isMoving);
         }
     };
 
@@ -220,30 +250,66 @@ public class DeviceControlActivity extends Activity {
             final String action = intent.getAction();
             if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
                 mConnected = true;
+                if (!isSafeModeOn) mBluetoothLeService.rssiMeasureManager(true);
                 updateConnectionState(R.string.connected);
                 invalidateOptionsMenu();
-            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+            }
+            else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
                 mConnected = false;
                 updateConnectionState(R.string.disconnected);
                 invalidateOptionsMenu();
                 clearUI();
-            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+            }
+            else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the user interface.
                 displayGattServices(mBluetoothLeService.getSupportedGattServices());
-            } else if (BluetoothLeService.ACTION_RSSI_AVAILABLE.equals(action)) {
+            }
+            else if (BluetoothLeService.ACTION_RSSI_AVAILABLE.equals(action)) {
                 handleRSSI(intent.getIntExtra(BluetoothLeService.EXTRA_RSSI, -100));
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+            }
+            else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
 
                 if (bluetoothGattCharacteristicHM_10 != null) {
                     final String msg = bluetoothGattCharacteristicHM_10.getStringValue(0);
-                    if (!msg.equals("passreq")) {
-                        bluetoothGattCharacteristicHM_10.setValue(msg);
-                    } else {
-                        bluetoothGattCharacteristicHM_10.setValue(password);
-                    }
-                    mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
+//                    mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
                     mBluetoothLeService.setCharacteristicNotification(bluetoothGattCharacteristicHM_10, true);
-                    displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+ //                   displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
+                    if (msg.contains("PAIR"))
+                    {
+                    }
+                    if (msg.contains("REQ")){
+                       // bluetoothGattCharacteristicHM_10.setValue(verification.charsFromHASH(msg));
+                        new Timer().schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                // this code will be executed after 2 seconds
+                                bluetoothGattCharacteristicHM_10.setValue("VERIFY " + verification.charsFromHASH(msg, HASH));
+                                mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
+                                mBluetoothLeService.setCharacteristicNotification(bluetoothGattCharacteristicHM_10, true);
+                            }
+                        }, 80);
+
+                    }
+                    if (msg.equals("car opened") || msg.equals("car hard opened")){
+                        if (!isCarOpened) {
+                            isCarOpened = true;
+                            carImage.setImageResource(R.drawable.car_open);
+                            addNotification();
+                        }
+                    }
+                    if (msg.equals("car closed")){
+                        isCarOpened = false;
+                        carImage.setImageResource(R.drawable.car_closed);
+                    }
+                    if (msg.equals("PASSWORD CHANGED")) {
+                        password = newPassword;
+                        try {
+                            HASH = verification.SHA256(password);
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                 }
             }
         }
@@ -251,9 +317,8 @@ public class DeviceControlActivity extends Activity {
 
     private void clearUI() {
         // mGattServicesList.setAdapter((SimpleExpandableListAdapter) null);
-        mDataField.setText(R.string.no_data);
+//        mDataField.setText(R.string.no_data);
     }
-
 
 
     @Override
@@ -268,6 +333,12 @@ public class DeviceControlActivity extends Activity {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         }
+        if(isCarOpened) {
+            carImage.setImageResource(R.drawable.car_open);
+        }
+        else{
+            carImage.setImageResource(R.drawable.car_closed);
+        }
 
     }
 
@@ -275,6 +346,7 @@ public class DeviceControlActivity extends Activity {
     protected void onPause() {
         super.onPause();
         //unregisterReceiver(mGattUpdateReceiver);
+
     }
 
     @Override
@@ -299,12 +371,13 @@ public class DeviceControlActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.gatt_services, menu);
         if (mConnected) {
-            menu.findItem(R.id.menu_connect).setVisible(false);
-            menu.findItem(R.id.menu_disconnect).setVisible(true);
+            //menu.findItem(R.id.menu_connect).setVisible(false);
+            //menu.findItem(R.id.menu_disconnect).setVisible(true);
             hardOpenButton.setEnabled(true);
         } else {
-            menu.findItem(R.id.menu_connect).setVisible(true);
-            menu.findItem(R.id.menu_disconnect).setVisible(false);
+           // menu.findItem(R.id.menu_connect).setVisible(true);
+           // menu.findItem(R.id.menu_disconnect).setVisible(false);
+            mRSSI.setText("Undefined");
             hardOpenButton.setEnabled(false);
         }
         return true;
@@ -314,16 +387,16 @@ public class DeviceControlActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.distance_change:
-                distanceChange();
+                distance_threshold = settingsChangeHandler.distanceChange(layoutInflater, context, distance_threshold);
                 return true;
             case R.id.password_change:
-                passwordChange();
+                passwordChange(layoutInflater, context, password);
                 return true;
-            case R.id.menu_connect:
-               // mBluetoothLeService.connect(mDeviceAddress);
+            case R.id.pair:
+                pair(layoutInflater,context);
                 return true;
-            case R.id.menu_disconnect:
-                mBluetoothLeService.disconnect();
+            case R.id.safe_mode:
+                safeModeChange();
                 return true;
             case android.R.id.home:
                 onBackPressed();
@@ -334,70 +407,50 @@ public class DeviceControlActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void distanceChange() {
+
+    private void safeModeChange() {
         final AlertDialog.Builder mBuilder = new AlertDialog.Builder(DeviceControlActivity.this);
-        final View mView = getLayoutInflater().inflate(R.layout.distance_dialog, null);
-        final EditText mDistance = (EditText) mView.findViewById(R.id.etDistance);
-        mDistance.setText(String.valueOf(distance));
-        Button mOK = (Button) mView.findViewById(R.id.OKButton);
-        Button mCancel = (Button) mView.findViewById(R.id.CancelButton);
+        final View mView = getLayoutInflater().inflate(R.layout.safe_mode, null);
+        Button mYES = (Button) mView.findViewById(R.id.YESButton);
+        Button mNO = (Button) mView.findViewById(R.id.NOButton);
         mBuilder.setView(mView);
         final AlertDialog dialog = mBuilder.create();
-        mOK.setOnClickListener(new View.OnClickListener() {
+        mNO.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mDistance.getText().toString().isEmpty()) {
-                    distance = Double.valueOf(mDistance.getText().toString());
-                    Toast toast = Toast.makeText(DeviceControlActivity.this, "Distance changed", Toast.LENGTH_SHORT);
-                    toast.setGravity(0, 0, Gravity.END);
-
+                    safeModeState(true);
+                    mBluetoothLeService.rssiMeasureManager(false);
+                    Toast.makeText(DeviceControlActivity.this, "Distance measure disabled", Toast.LENGTH_SHORT).show();
+                    mRSSI.setText("Not measured");
+                    unbindAccService();
+                    mAccServiceBound = false;
+                   // mAccelerometer.setText("Not measured");
                     dialog.cancel();
-                    toast.show();
-                } else {
-                    Toast.makeText(DeviceControlActivity.this, "Please fill the box", Toast.LENGTH_SHORT).show();
-                }
             }
         });
-        mCancel.setOnClickListener(new View.OnClickListener() {
+        mYES.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(DeviceControlActivity.this, "Distance has not been changed", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
+                safeModeState(false);
+                mBluetoothLeService.rssiMeasureManager(true);
+                    Toast.makeText(DeviceControlActivity.this, "Distance measure enabled", Toast.LENGTH_SHORT).show();
+                    Intent accServiceIntent = new Intent(getApplicationContext(), AccelerometerService.class);
+                    bindService(accServiceIntent, mAccServiceConnection, BIND_AUTO_CREATE);
+                    dialog.dismiss();
             }
         });
         dialog.show();
     }
 
-    private void passwordChange() {
 
-        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(DeviceControlActivity.this);
-        final View mView = getLayoutInflater().inflate(R.layout.password_dialog, null);
-        final EditText mPassword = (EditText) mView.findViewById(R.id.etPassword);
-        Button mOK = (Button) mView.findViewById(R.id.OKButton);
-        Button mCancel = (Button) mView.findViewById(R.id.CancelButton);
-        mBuilder.setView(mView);
-        final AlertDialog dialog = mBuilder.create();
-        mOK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mPassword.getText().toString().isEmpty()) {
-                    Toast.makeText(DeviceControlActivity.this, "Password changed", Toast.LENGTH_SHORT).show();
-                    dialog.cancel();
-                } else {
-                    Toast.makeText(DeviceControlActivity.this, "Please fill the box", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        mCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(DeviceControlActivity.this, "Password has not been changed", Toast.LENGTH_SHORT).show();
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
+    private void unbindAccService() {
+        if (mAccServiceBound) {
+            unbindService(mAccServiceConnection);
+        }
+        else {
+   //         mAccelerometer.setText("err");
+        }
     }
-
 
     private void updateConnectionState(final int resourceId) {
         runOnUiThread(new Runnable() {
@@ -408,31 +461,34 @@ public class DeviceControlActivity extends Activity {
         });
     }
 
-
     private void displayData(String data) {
         if (data != null) {
             mDataField.setText(data);
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private void handleRSSI(int data) {
-        //mRSSI.setText(calculateDistance(data));
-        mRSSI.setText(String.valueOf(data));
-        rssiValue = data;
-        if (isMoving && rssiValue > TRESHOLD_RSSI && counter > CAR_OPENING_COUNTER && bluetoothGattCharacteristicHM_10 != null){
+        double distance = calculateDistance(data);
+        mRSSI.setText(String.format("%.1f", distance));
+        if (isMoving && distance < distance_threshold && counter > CAR_OPENING_COUNTER && bluetoothGattCharacteristicHM_10 != null) {
             bluetoothGattCharacteristicHM_10.setValue("open");
             mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
             mBluetoothLeService.setCharacteristicNotification(bluetoothGattCharacteristicHM_10, true);
             counter = 0;
         }
-        else if (counter > CAR_OPENING_COUNTER && bluetoothGattCharacteristicHM_10 != null){
-            bluetoothGattCharacteristicHM_10.setValue("close");
-            mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
-            mBluetoothLeService.setCharacteristicNotification(bluetoothGattCharacteristicHM_10, true);
+//        else if (counter > CAR_OPENING_COUNTER && bluetoothGattCharacteristicHM_10 != null) {
+//            bluetoothGattCharacteristicHM_10.setValue("close");
+//            mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
+//            mBluetoothLeService.setCharacteristicNotification(bluetoothGattCharacteristicHM_10, true);
+//            counter = 0;
+//        }
+        else
+            if (counter > CAR_OPENING_COUNTER)
+            {
             counter = 0;
-        }
-        else if (counter < CAR_OPENING_COUNTER){counter ++;}
-        else counter++;
+            }
+            else counter++;
 
     }
 
@@ -447,7 +503,7 @@ public class DeviceControlActivity extends Activity {
             for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
                 uuid = gattCharacteristic.getUuid().toString();
                 if (uuid.equals(SampleGattAttributes.HM_10)) {
-                    bluetoothGattCharacteristicHM_10 = gattService.getCharacteristic(BluetoothLeService.UUID_HEART_RATE_MEASUREMENT);
+                    bluetoothGattCharacteristicHM_10 = gattService.getCharacteristic(BluetoothLeService.HM10_UUID);
 
                     // ------------- Żeby czytał charakterystyke HM-10 -----------------------------------
                     final int charaProp = bluetoothGattCharacteristicHM_10.getProperties();
@@ -491,29 +547,136 @@ public class DeviceControlActivity extends Activity {
 
     public void hardOpen(View view) {
         if (bluetoothGattCharacteristicHM_10 != null) {
-            bluetoothGattCharacteristicHM_10.setValue("open");
+            bluetoothGattCharacteristicHM_10.setValue("HARDOPEN");
             mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
             mBluetoothLeService.setCharacteristicNotification(bluetoothGattCharacteristicHM_10, true);
         }
 
     }
+    private void addNotification(){
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.sentinel_logo_tiny)
+                .setContentTitle("Car status")
+                .setContentText("Car has been opened")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setVibrate(new long[] {1000} );
 
-    public String calculateDistance(String stringRssi) {
-
-        if (stringRssi == null) return "err";
-        double rssi = Double.parseDouble(stringRssi);
-        double txPower = -62; //hard coded power value. Usually ranges between -59 to -65
-
-        if (rssi == 0) {
-            return String.valueOf(-1.0);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (mChannel == null){
+            mChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);}
+            assert manager != null;
+            manager.createNotificationChannel(mChannel);
         }
+        manager.notify(1 , notification.build());
+    }
 
+    public double calculateDistance(int data) {
+        double rssi = (double) data;
+        double txPower = -61;
+        if (rssi == 0) {
+            return -1.0;
+        }
         double ratio = rssi * 1.0 / txPower;
         if (ratio < 1.0) {
-            return String.valueOf(Math.pow(ratio, 10));
+            return Math.pow(ratio, 10);
         } else {
-            double distance = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-            return String.valueOf(distance);
+            return (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
         }
+    }
+
+    private boolean safeModeState(boolean parameter)
+    {
+        if (parameter) {
+            mSafeModeState.setText("on");
+            isSafeModeOn = true;
+        } else {
+            mSafeModeState.setText("off");
+            isSafeModeOn = false;
+        }
+        return parameter;
+    }
+
+    public void passwordChange(LayoutInflater inflater, final Context context, String password) {
+        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
+        final View mView = inflater.inflate(R.layout.password_dialog, null);
+        final EditText mPassword = (EditText) mView.findViewById(R.id.etPassword);
+        mPassword.setText(String.valueOf(password));
+        Button mOK = (Button) mView.findViewById(R.id.OKButton);
+        Button mCancel = (Button) mView.findViewById(R.id.CancelButton);
+        mBuilder.setView(mView);
+
+        final AlertDialog dialog = mBuilder.create();
+        mOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mPassword.getText().toString().isEmpty()) {
+                    verifyPassword(mPassword.getText().toString());
+                    Toast toast = Toast.makeText(context, "Password changing...", Toast.LENGTH_SHORT);
+                    toast.setGravity(0, 0, 700);
+                    dialog.cancel();
+                    toast.show();
+                } else {
+                    Toast.makeText(context, "Please fill the box", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        mCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Password has not been changed", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    public void pair(LayoutInflater inflater, final Context context) {
+
+        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(context);
+        final View mView = inflater.inflate(R.layout.pair_dialog, null);
+        final EditText etMac = (EditText) mView.findViewById(R.id.etMac);
+        final EditText etPassword = (EditText) mView.findViewById(R.id.etPassword);
+        etMac.setText(mDeviceAddress);
+        Button mOK = (Button) mView.findViewById(R.id.OKButton);
+        Button mCancel = (Button) mView.findViewById(R.id.CancelButton);
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        mOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!etMac.getText().toString().isEmpty() && !etPassword.getText().toString().isEmpty()) {
+                    DeviceControlActivity.mDeviceAddress = etMac.getText().toString();
+                    bluetoothGattCharacteristicHM_10.setValue("PASS " + etPassword.getText().toString() + " P " + "42352");
+                    mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
+                    mBluetoothLeService.setCharacteristicNotification(bluetoothGattCharacteristicHM_10, true);
+                    Toast toast = Toast.makeText(context, "Pairing", Toast.LENGTH_SHORT);
+                    toast.setGravity(0, 0, 700);
+                    dialog.cancel();
+                    toast.show();
+
+                } else {
+                    Toast.makeText(context, "Please fill boxes", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        mCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(context, "Device not paired", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    private void verifyPassword(String newPwd){
+        bluetoothGattCharacteristicHM_10.setValue("PASS " + password + " C " + newPwd);
+        mBluetoothLeService.writeCharacteristic(bluetoothGattCharacteristicHM_10);
+        mBluetoothLeService.setCharacteristicNotification(bluetoothGattCharacteristicHM_10, true);
+        newPassword = newPwd;
+
+
     }
 }
